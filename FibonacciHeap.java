@@ -6,6 +6,7 @@
 public class FibonacciHeap
 {
 
+    //--------------------------------------- isEmpty -------------------------------------
    /**
     * public boolean isEmpty()
     *
@@ -19,7 +20,8 @@ public class FibonacciHeap
     {
     	return false; // should be replaced by student code
     }
-		
+
+    //----------------------------- inset -----------------------------------------------------
    /**
     * public HeapNode insert(int key)
     *
@@ -32,6 +34,7 @@ public class FibonacciHeap
     	return new HeapNode(key); // should be replaced by student code
     }
 
+    //---------------------------  deleteMin --------------------------------------------------
    /**
     * public void deleteMin()
     *
@@ -44,6 +47,7 @@ public class FibonacciHeap
      	
     }
 
+    //-------------------------- findMin --------------------------------------------------------
    /**
     * public HeapNode findMin()
     *
@@ -54,7 +58,8 @@ public class FibonacciHeap
     {
     	return new HeapNode(0);// should be replaced by student code
     } 
-    
+
+    //------------------------ meld  -----------------------------------------------------------
    /**
     * public void meld (FibonacciHeap heap2)
     *
@@ -66,6 +71,7 @@ public class FibonacciHeap
     	  return; // should be replaced by student code   		
     }
 
+    //---------------------------------  size ----------------------------------------------
    /**
     * public int size()
     *
@@ -76,7 +82,8 @@ public class FibonacciHeap
     {
     	return 0; // should be replaced by student code
     }
-    	
+
+    //---------------------------------  countersRep ----------------------------------------------
     /**
     * public int[] countersRep()
     *
@@ -88,7 +95,8 @@ public class FibonacciHeap
 	int[] arr = new int[42];
         return arr; //	 to be replaced by student code
     }
-	
+
+    //---------------------------------  delete ----------------------------------------------
    /**
     * public void delete(HeapNode x)
     *
@@ -100,6 +108,7 @@ public class FibonacciHeap
     	return; // should be replaced by student code
     }
 
+    //---------------------------------  decreaseKey ----------------------------------------------
    /**
     * public void decreaseKey(HeapNode x, int delta)
     *
@@ -111,6 +120,7 @@ public class FibonacciHeap
     	return; // should be replaced by student code
     }
 
+    //---------------------------------  potential ----------------------------------------------
    /**
     * public int potential() 
     *
@@ -123,6 +133,7 @@ public class FibonacciHeap
     	return 0; // should be replaced by student code
     }
 
+    //---------------------------------  totalLinks ----------------------------------------------
    /**
     * public static int totalLinks() 
     *
@@ -136,6 +147,7 @@ public class FibonacciHeap
     	return 0; // should be replaced by student code
     }
 
+    //---------------------------------  totalCuts ----------------------------------------------
    /**
     * public static int totalCuts() 
     *
@@ -147,6 +159,7 @@ public class FibonacciHeap
     	return 0; // should be replaced by student code
     }
 
+    //---------------------------------  Kmin ----------------------------------------------
      /**
     * public static int[] kMin(FibonacciHeap H, int k) 
     *
@@ -159,7 +172,9 @@ public class FibonacciHeap
         int[] arr = new int[42];
         return arr; // should be replaced by student code
     }
-    
+
+    //------------------------------- HeapNode --------------------------------------
+
    /**
     * public class HeapNode
     * 
