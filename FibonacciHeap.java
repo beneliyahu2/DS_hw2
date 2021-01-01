@@ -1,3 +1,5 @@
+package DS_hw2;
+
 /**
  * FibonacciHeap
  *
@@ -7,8 +9,9 @@ public class FibonacciHeap
 {
     // fields:
     private HeapNode min;
-    private HeapNode head;  //the left most root in the roots list
+    private HeapNode head;  //the left most root in the roots list //no need because it is a doubly linked list
     private int size;       //number of keys in the heap
+    private int number_of_trees; //number of the trees in the heap
 
 
     // constructors:
@@ -16,6 +19,7 @@ public class FibonacciHeap
         this.min = null;
         this.size = 0;
         this.head = null;
+        this.number_of_trees=0;
     }
 
     public FibonacciHeap(int key){      //constructor of a one item heap with a given key
@@ -25,6 +29,7 @@ public class FibonacciHeap
         this.head = keyNode;
         keyNode.next = keyNode;
         keyNode.prev = keyNode;
+        this.number_of_trees=1;
 
     }
 
@@ -63,11 +68,16 @@ public class FibonacciHeap
      * Returns the new node created.
      */
     public HeapNode insert(int key) {
-        FibonacciHeap insertHeap = new FibonacciHeap(key);
+        FibonacciHeap insertHeap = new FibonacciHeap(key); //creates a new heap with one tree
         HeapNode insertNode = insertHeap.min;
         this.meld(insertHeap);                  //takes care of updating the size field
+        this.number_of_trees+=1;
         return insertNode;
     }
+
+    private void inserstNode(HeapNode basket) {  //need to split the insert for the delete
+    }
+
 
     //---------------------------  deleteMin ------------------------------------------------------------
     /**
@@ -80,6 +90,40 @@ public class FibonacciHeap
         return; // should be replaced by student code
 
     }
+
+    //------------------------- Consolidating / Successive Linking ----------------------------------------
+//makes the Lazy-Heap to nonLazy-Heap
+
+    private void consolidating(){
+
+     //making the baskets
+    double possible_ranks = Math.log10(this.size) / Math.log10(2);
+    HeapNode[] baskets = new HeapNode[(int) possible_ranks];
+
+    //sorting each tree to the basket of its rank
+    for(HeapNode y=this.min ; y != null ; y=y.next)
+    {
+      if (baskets[y.rank] != null) {
+          HeapNode merged = baskets[y.rank].link(y);
+          baskets[y.rank+1]=merged;
+          this.delete(y);
+      }
+    }
+    //adding the non-Lazy heap the the original heap
+    FibonacciHeap UpdatedHeap = new FibonacciHeap();
+    for (int i=0;i<baskets.length;i++){
+        if (baskets[i]!=null){
+            this.inserstNode(baskets[i]);
+        }
+    }
+
+}
+
+//needs to add update new min
+
+//needs to add delete on a binimial heap
+
+
 
     //-------------------------- findMin --------------------------------------------------------
     /**
@@ -96,6 +140,8 @@ public class FibonacciHeap
      * public void meld (FibonacciHeap heap2)
      * Meld the heap with heap2  - by concatenating the two roots lists
      */
+
+    //can it deal with melding to an empty heap?
     public void meld (FibonacciHeap heap2) {
         HeapNode thisTail = this.getTail();
         HeapNode heap2Tail = heap2.getTail();
@@ -242,7 +288,9 @@ public class FibonacciHeap
          * link the node to another node, considering their keys.
          * the nodes are roots of two trees
          */
-
+        public HeapNode link(HeapNode y){
+            return null;
+        }
 
     }
 }
