@@ -10,25 +10,30 @@ public class FibonacciHeap
     private HeapNode head;  //the left most root in the roots list //no need because it is a doubly linked list
     private int size;       //number of keys in the heap
     private int number_of_trees; //number of the trees in the heap
+    private int markedNum;      //number of marked nodes in the heap
+
+    private static int linkNum; //total number of link operations made during the run-time of the program
+    private static int cutNum; //total number of cut operations made during the run-time of the program
 
 
     // constructors:
     public FibonacciHeap(){             //constructor for an empty tree
         this.min = null;
-        this.size = 0;
         this.head = null;
-        this.number_of_trees=0;
+        this.size = 0;
+        this.number_of_trees = 0;
+        this.markedNum = 0;
     }
 
     public FibonacciHeap(int key){      //constructor of a one item heap with a given key
         HeapNode keyNode = new HeapNode(key);
         this.min = keyNode;
-        this.size = 1;
         this.head = keyNode;
+        this.size = 1;
         keyNode.next = keyNode;
         keyNode.prev = keyNode;
-        this.number_of_trees=1;
-
+        this.number_of_trees = 1;
+        this.markedNum = 0;
     }
 
     //--------------------------------------- getHead ------------------------------------
@@ -43,15 +48,41 @@ public class FibonacciHeap
         return this.head.prev;
     }
 
+    //--------------------------------------- getNum_of_trees ------------------------------------
+
+    private int getNum_of_trees (){
+        return this.number_of_trees;
+    }
+
+    //--------------------------------------- getMarkedNum ------------------------------------
+
+    private int getMarkedNum(){
+        return this.markedNum;
+    }
+
+    //-------------------------------------- changeTo ----------------------------------------
+
+    /**
+     * private void changeTo(FibonacciHeap heap2)
+     *
+     * changing the heap into heap2 by:
+     * assigning the fields of heap2 to the fields of the heap
+     */
+    private void changeTo(FibonacciHeap heap2){
+        this.min = heap2.findMin();
+        this.head = heap2.getHead();
+        this.size = heap2.size();
+        this.number_of_trees = heap2.getNum_of_trees();
+        this.markedNum = heap2.getMarkedNum();
+    }
+
     //--------------------------------------- isEmpty -------------------------------------
     /**
      * public boolean isEmpty()
      *
      * precondition: none
      *
-     * The method returns true if and only if the heap
-     * is empty.
-     *
+     * The method returns true if and only if the heap is empty.
      */
     public boolean isEmpty() {
         return this.size == 0;
@@ -62,27 +93,27 @@ public class FibonacciHeap
      * public HeapNode insert(int key)
      *
      * Creates a node (of type HeapNode) which contains the given key, and inserts it into the heap.
-     *
+     * Updating the fields of the heap (size, number_of_trees, head)
      * Returns the new node created.
      */
     public HeapNode insert(int key) {
-        FibonacciHeap insertHeap = new FibonacciHeap(key); //creates a new heap with one tree
-        HeapNode insertNode = insertHeap.min;
-        this.meld(insertHeap);                  //takes care of updating the size field
-        this.number_of_trees += 1;
+
+        FibonacciHeap insertHeap = new FibonacciHeap(key); // new heap with one tree
+        HeapNode insertNode = insertHeap.findMin();         // new node
+
+        this.meldAtFirst(insertHeap);                  //meld at first (takes care of updating the fields)
+
         return insertNode;
     }
 
     private void inserstNode(HeapNode basket) {  //need to split the insert for the delete
     }
 
-
     //---------------------------  deleteMin ------------------------------------------------------------
     /**
      * public void deleteMin()
      *
      * Delete the node containing the minimum key.
-     *
      */
     public void deleteMin() {
         return; // should be replaced by student code
@@ -90,7 +121,7 @@ public class FibonacciHeap
     }
 
     //------------------------- Consolidating / Successive Linking ----------------------------------------
-//makes the Lazy-Heap to nonLazy-Heap
+    //makes the fib-Heap to nonLazy-Heap
 
     private void consolidating(){
 
@@ -123,42 +154,70 @@ public class FibonacciHeap
 
 //needs to add delete on a binimial heap
 
-
-
     //-------------------------- findMin --------------------------------------------------------
     /**
      * public HeapNode findMin()
+     *
      * Return the node of the heap whose key is minimal.
      */
     public HeapNode findMin() {
         return this.min;
     }
 
-
     //------------------------ meld  -----------------------------------------------------------
     /**
      * public void meld (FibonacciHeap heap2)
-     * Meld the heap with heap2  - by concatenating the two roots lists
+     *
+     * Meld the heap with heap2  - by concatenating heap2 roots list to the END of this heap roots list
+     * updating the fields of the heap
      */
 
-    //can it deal with melding to an empty heap?
     public void meld (FibonacciHeap heap2) {
+        // Edge cases:
+        if (heap2.isEmpty()){  // heap2 is empty
+            return;
+        }
+        if (this.isEmpty()){    // the heap is empty and heap2 is not empty
+            this.changeTo(heap2);
+        }
+        // saving pointers:
         HeapNode thisTail = this.getTail();
         HeapNode heap2Tail = heap2.getTail();
         HeapNode heap2Head = heap2.getHead();
 
+        // changing the "next"s:
         thisTail.next = heap2Head;
         heap2Tail.next = this.head;
 
+        // changing the "prev"s:
         heap2Head.prev = thisTail;
         this.head.prev = heap2Tail;
 
+        //Updating fields:
         this.size += heap2.size();
+        this.number_of_trees += heap2.getNum_of_trees();
+        this.markedNum += heap2.getMarkedNum();
+        if (heap2.findMin().key < this.min.key){
+            this.min = heap2.findMin();
+        }
+    }
+    //------------------------ meld at first -----------------------------------------------
+    /**
+     * public void meldAtFirst (FibonacciHeap heap2)
+     *
+     * Meld the heap with heap2  - by concatenating heap2 roots list to the BEGINNING of this heap roots list
+     * updating the fields: size, min and number_of_trees
+     */
+
+    public void meldAtFirst (FibonacciHeap heap2) {
+        heap2.meld(this);
+        this.changeTo(heap2);
     }
 
     //---------------------------------  size ----------------------------------------------
     /**
      * public int size()
+     *
      * Return the number of elements in the heap
      */
     public int size() {
@@ -170,7 +229,6 @@ public class FibonacciHeap
      * public int[] countersRep()
      *
      * Return a counters array, where the value of the i-th entry is the number of trees of order i in the heap.
-     *
      */
     public int[] countersRep() {
         int[] arr = new int[42];
@@ -256,7 +314,6 @@ public class FibonacciHeap
      * If you wish to implement classes other than FibonacciHeap
      * (for example HeapNode), do it in this file, not in
      * another file
-     *
      */
     public class HeapNode{
 
