@@ -50,13 +50,13 @@ public class FibonacciHeap
 
     //--------------------------------------- getNum_of_trees ------------------------------------
 
-    private int getNum_of_trees (){
+    public int getNum_of_trees (){
         return this.number_of_trees;
     }
 
     //--------------------------------------- getMarkedNum ------------------------------------
 
-    private int getMarkedNum(){
+    public int getMarkedNum(){
         return this.markedNum;
     }
 
@@ -106,7 +106,7 @@ public class FibonacciHeap
         return insertNode;
     }
 
-    private void inserstNode(HeapNode basket) {  //need to split the insert for the delete
+    private void insertNode(HeapNode basket) {  //need to split the insert for the delete
     }
 
     //---------------------------  deleteMin ------------------------------------------------------------
@@ -144,7 +144,7 @@ public class FibonacciHeap
     FibonacciHeap UpdatedHeap = new FibonacciHeap();
     for (int i=0;i<baskets.length;i++){
         if (baskets[i]!=null){
-            this.inserstNode(baskets[i]);
+            this.insertNode(baskets[i]);
         }
     }
 
@@ -152,7 +152,7 @@ public class FibonacciHeap
 
 //needs to add update new min
 
-//needs to add delete on a binimial heap
+//needs to add delete on a binomial heap
 
     //-------------------------- findMin --------------------------------------------------------
     /**
