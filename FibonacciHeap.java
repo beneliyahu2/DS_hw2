@@ -1,5 +1,3 @@
-package DS_hw2;
-
 /**
  * FibonacciHeap
  *
@@ -71,7 +69,7 @@ public class FibonacciHeap
         FibonacciHeap insertHeap = new FibonacciHeap(key); //creates a new heap with one tree
         HeapNode insertNode = insertHeap.min;
         this.meld(insertHeap);                  //takes care of updating the size field
-        this.number_of_trees+=1;
+        this.number_of_trees += 1;
         return insertNode;
     }
 
@@ -101,12 +99,14 @@ public class FibonacciHeap
     HeapNode[] baskets = new HeapNode[(int) possible_ranks];
 
     //sorting each tree to the basket of its rank
-    for(HeapNode y=this.min ; y != null ; y=y.next)
+    for(HeapNode y=this.min ; y != null ; y=y.next)  //need to change - head
     {
-      if (baskets[y.rank] != null) {
+      if (baskets[y.rank] != null) {    //basket has a tree
           HeapNode merged = baskets[y.rank].link(y);
-          baskets[y.rank+1]=merged;
-          this.delete(y);
+          baskets[y.rank+1] = merged;
+      }
+      else{                              //the basket is empty
+          baskets[y.rank] = y;
       }
     }
     //adding the non-Lazy heap the the original heap
