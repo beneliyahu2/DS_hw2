@@ -12,6 +12,7 @@ public class fibHeapTester {
         p("-------- Keys in tree: " + heapKeys + " ------------- Last action: " + lastAction + " ------------ :");
     }
 
+
     //-------------------------------error Printers: ----------------------------------
     //boolean:
     private static void errorPrinter(String testName, boolean wantedRes , boolean output ) {
@@ -146,6 +147,8 @@ public class fibHeapTester {
         h.meld(h3);
         heapTest(h, false, -21, 11, 11,0);
 
+        FibonacciHeap.HeapNode nodeMinus21 = h.findMin();
+
         //----------  new heap h4 with keys: -87, 55 build with the "one node constructor" -------------------------------------
 
         sepetatorPrint("-87, 55", "new heap h4 with keys: -87, 55");
@@ -160,8 +163,18 @@ public class fibHeapTester {
         h.meldAtFirst(h4);
         heapTest(h, false, -87, 13, 13,0);
 
-        //
+        //-------------------- decreaseKey of the min --------------------------------------------------
 
+        sepetatorPrint("-97, 55, 5,4,6,7,1,9,3,14,0,-21,-2", "h.decreaseKey(minNode, 10)");
+        FibonacciHeap.HeapNode minNode = h.findMin();
+        h.decreaseKey(minNode, 10);
+        heapTest(h, false, -97, 13, 13,0);
+
+        //------------------ decreaseKey of a middle node "-21" ------------------------------------------------------
+
+        sepetatorPrint("-97, 55, 5,4,6,7,1,9,3,14,0,-25,-2", "h.decreaseKey(nodeMinus21 ,5)");
+        h.decreaseKey(nodeMinus21 ,5);
+        heapTest(h, false, -97, 13, 13,0);
 
         //------------------------------------------------------------------------------------------------
         p("\nDone!");

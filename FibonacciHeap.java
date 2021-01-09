@@ -61,7 +61,6 @@ public class FibonacciHeap
     }
 
     //-------------------------------------- changeTo ----------------------------------------
-
     /**
      * private void changeTo(FibonacciHeap heap2)
      *
@@ -74,6 +73,20 @@ public class FibonacciHeap
         this.size = heap2.size();
         this.number_of_trees = heap2.getNum_of_trees();
         this.markedNum = heap2.getMarkedNum();
+    }
+    //------------------------------ treeSize ----------------------------- maybe unnecessary (!)
+
+    private int treeSize(HeapNode x){
+        if (x.child == null){  // x is a leaf
+            return 1;
+        }
+        int childrenSize = 0;
+        HeapNode child = x.child;
+        do{
+            childrenSize += treeSize(child);
+            child = child.next;
+        } while (child != x.child);
+        return childrenSize;
     }
 
     //--------------------------------------- isEmpty -------------------------------------
@@ -254,7 +267,72 @@ public class FibonacciHeap
      * to reflect this change (for example, the cascading cuts procedure should be applied if needed).
      */
     public void decreaseKey(HeapNode x, int delta) {
-        return; // should be replaced by student code
+        x.key -= delta;
+        if (x.parent == null){ // x is a root
+            if (x.key < this.min.key){
+                this.min = x;
+            }
+        }
+        else if (x.key < x.parent.key){  // x is not a root and new key violate the heap role
+            cascadingCut(x);
+        }
+        return;
+    }
+    //------------------------ cut -----------------------------------------------------------
+    /*
+    * private void cut(HeapNode x)
+    * cut away from its original tree the subtree that x is its root.
+    * fixes the original tree pointers and fields of its nodes. does not deal with the subtree that was cut.
+    * add one to the counter of cuts that happened.
+    */
+    private void cut(HeapNode x){
+        HeapNode parent = x.parent;
+        x.parent = null;
+        x.mark = false;
+        parent.rank -=1;
+        if (x.next == x){ // x was an only child
+            parent.child = null;
+        }
+        else {
+            if (parent.child == x){  // cutting the leftmost son
+                parent.child = x.next;
+            }
+            x.prev.next = x.next;
+            x.next.prev = x.prev;
+        }
+        cutNum += 1;
+    }
+    //------------------------ cascading cut ----------------------------------------------------
+
+    /*
+    * private void cascadingCut(HeapNode x)
+    * cut away from its original tree the subtree that x is its root and keep on cutting its ancestors subtrees if needed.
+    * append the cut subtrees to the root list.
+    */
+    private void cascadingCut(HeapNode x){
+        HeapNode parent = x.parent;
+        cut(x);
+
+        // adding the tree that x is its root to the roots list:
+        x.next = this.head;
+        x.prev = this.getTail();
+        this.head.prev = x;
+        this.getTail().next = x;
+        this.head = x;
+        this.number_of_trees += 1;
+        if (x.key < this.min.key){
+            this.min = x;
+        }
+
+        // moving up the tree (in recursion):
+        if (parent.parent != null){  // parent is not the root
+            if (!parent.mark){
+                parent.mark = true;
+            }
+            else {
+                cascadingCut(parent);
+            }
+        }
     }
 
     //---------------------------------  potential ----------------------------------------------
@@ -290,7 +368,7 @@ public class FibonacciHeap
      * A cut operation is the operation which disconnects a subtree from its parent (during decreaseKey/delete methods).
      */
     public static int totalCuts() {
-        return 0; // should be replaced by student code
+        return cutNum;
     }
 
     //---------------------------------  Kmin ----------------------------------------------
@@ -348,6 +426,9 @@ public class FibonacciHeap
         public HeapNode link(HeapNode y){
             return null;
         }
+
+
+        //-------------------------------------------------------------------------------------------
 
     }
 }
