@@ -33,6 +33,7 @@ public class FibonacciHeap
         this.sentinel.prev = this.min;
         this.min.prev = this.sentinel;
         this.min.next = this.sentinel;
+        this.size = 1;
         this.treesNum = 1;
         this.markedNum = 0;
     }
@@ -169,7 +170,7 @@ public class FibonacciHeap
         int maxRank = (int)Math.floor(customLog(1.618,this.size));
         HeapNode[] buckets = new HeapNode[maxRank + 1 ]; //initialize the buckets list
         for (int i = 0; i < buckets.length ; i++) {
-            buckets[i] = null;
+            buckets[i] = null;                          //they are allready nulls
         }
 
         HeapNode start = this.sentinel; //looping through the root list, starting sentinel
@@ -191,6 +192,7 @@ public class FibonacciHeap
             buckets[d] = x; //no trees in the bucket
             runner = runner.next;
         }
+        this.treesNum = 0;
         this.min = null; //unpacking the buckets
         for (int i = 0; i < buckets.length; i++) {
             if (buckets[i] != null) {
@@ -204,6 +206,7 @@ public class FibonacciHeap
                         this.min = buckets[i];
                     }
                 }
+                this.treesNum += 1;
             }
         }
     }
@@ -219,9 +222,11 @@ public class FibonacciHeap
         if (x.child != null){ //x already have other children
             y.InsertAfter(x.child);
         }
-        x.child = y; //adding y as the biggestchild of x and connecting his other children to it
-        y.marked = false;
-        this.markedNum -= 1;
+        x.child = y; //adding y as the biggest child of x and connecting his other children to it
+        y.parent = x;
+        //y.marked = false;             why?
+        //this.markedNum -= 1;
+        x.rank += 1;
         linksNum += 1;
     }
 
@@ -257,11 +262,11 @@ public class FibonacciHeap
         HeapNode heap2Sentinel = heap2.getSentinel();
 
         // changing the "next"s:
-        thisTail.next = heap2Sentinel;
+        thisTail.next = heap2Sentinel.next;
         heap2Tail.next = this.sentinel;
 
         // changing the "prev"s:
-        heap2Sentinel.prev = thisTail;
+        heap2Sentinel.next.prev = thisTail;
         this.sentinel.prev = heap2Tail;
 
         //Updating fields:
