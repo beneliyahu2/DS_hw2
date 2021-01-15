@@ -99,7 +99,9 @@ public class FibonacciHeap
         FibonacciHeap insertHeap = new FibonacciHeap(key); // new heap with one tree
         HeapNode insertNode = insertHeap.findMin();         // new node
 
-        this.meldAtFirst(insertHeap);                  //meld at first (takes care of updating the fields)
+        //meld at first (takes care of updating the fields):
+        insertHeap.meld(this);
+        this.changeTo(insertHeap);
 
         return insertNode;
     }
@@ -169,7 +171,6 @@ public class FibonacciHeap
         this.size -= 1;
 
     }
-
 
     //------------------------- Consolidate / Successive Linking ----------------------------------------
     /**
@@ -319,19 +320,6 @@ public class FibonacciHeap
         }
     }
 
-    //------------------------ meld at first -----------------------------------------------
-    /**
-     * public void meldAtFirst (FibonacciHeap heap2)
-     *
-     * Meld the heap with heap2  - by concatenating heap2 roots list to the BEGINNING of this heap roots list
-     * updating the fields: size, min and number_of_trees
-     */
-
-    public void meldAtFirst (FibonacciHeap heap2) {
-        heap2.meld(this);
-        this.changeTo(heap2);
-    }
-
     //---------------------------------  size ----------------------------------------------
     /**
      * public int size()
@@ -384,6 +372,7 @@ public class FibonacciHeap
         }
         return;
     }
+
     //------------------------ cut -----------------------------------------------------------
     /*
     * private void cut(HeapNode x)
@@ -411,6 +400,7 @@ public class FibonacciHeap
         }
         cutsNum += 1;
     }
+
     //------------------------ cascading cut ----------------------------------------------------
 
     /*
@@ -423,7 +413,11 @@ public class FibonacciHeap
         cut(x);
 
         // adding the tree that x is its root to the beginning of the roots list:
-        this.sentinel.InsertAfter(x);
+        x.prev = this.sentinel;
+        x.next = this.sentinel.next;
+        this.sentinel.next = x;
+        x.next.prev = x;
+
         this.treesNum += 1;
         if (x.key < this.min.key){
             this.min = x;
@@ -531,18 +525,6 @@ public class FibonacciHeap
 
         public int getKey() {
             return this.key;
-        }
-
-        //------------------------ InsertAfter -----------------------------------------------------------
-        /**
-         * public void InsertAfter(HeapNode B)
-         * insert node B after the node "this"
-         */
-        public void InsertAfter(HeapNode B){
-            B.prev = this;
-            B.next = this.next;
-            this.next = B;
-            B.next.prev = B;
         }
 
         //-------------------------------------------------------------------------------------------
