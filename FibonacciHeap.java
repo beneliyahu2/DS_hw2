@@ -54,11 +54,6 @@ public class FibonacciHeap
     public int getMarkedNum(){
         return this.markedNum;
     }
-    //--------------------------------------- customLog --------------------
-
-    private static double customLog(double base, double logNumber) {
-        return (double)Math.log(logNumber) / Math.log(base);
-    }
 
     //---------------------------------- changeTo ----------------------------------------
     /**
@@ -191,7 +186,7 @@ public class FibonacciHeap
      * return a buckets array with the linked trees.
      */
     protected HeapNode[] toBuckets(){
-        int maxRank = (int)Math.floor(customLog(1.618,this.size));
+        int maxRank = (int)Math.floor((double)Math.log(this.size) / Math.log(1.618));
         HeapNode[] bucketsArr = new HeapNode[maxRank + 1 ]; //initialize the buckets list
 
         HeapNode currTree = this.sentinel.next;
