@@ -18,7 +18,7 @@ public class FibonacciHeap
 
 
     // constructors:
-    public FibonacciHeap(){             //constructor for an empty tree
+    public FibonacciHeap(){             //constructor for an empty heap (a sentinel that points to itself)
         this.min = null;
         this.sentinel = new HeapNode();
         this.size = 0;
@@ -60,7 +60,7 @@ public class FibonacciHeap
         return (double)Math.log(logNumber) / Math.log(base);
     }
 
-    //---------------------------------- changeTo ------------------ needs modifications (!) ----------------------
+    //---------------------------------- changeTo ----------------------------------------
     /**
      * private void changeTo(FibonacciHeap heap2)
      *
@@ -95,58 +95,15 @@ public class FibonacciHeap
      * Returns the new node created.
      */
     public HeapNode insert(int key) {
-        //creating new heap with one node
-        HeapNode NodeToInsert = new HeapNode(key);
-        this.sentinel.InsertAfter(NodeToInsert);
 
-        if (this.min != null) {
-            if (key < this.min.getKey()) {
-                this.min = NodeToInsert;
-            }
-        }
-        else { //inserting the first node
-            this.min = NodeToInsert;
-        }
-        this.size += 1;
-        this.treesNum += 1;
+        FibonacciHeap insertHeap = new FibonacciHeap(key); // new heap with one tree
+        HeapNode insertNode = insertHeap.findMin();         // new node
 
-        return NodeToInsert;
+        this.meldAtFirst(insertHeap);                  //meld at first (takes care of updating the fields)
+
+        return insertNode;
     }
 
-    //---------------------------  deleteMin ------------------------------------------------------------
-    /**
-     * public void deleteMin()
-     *
-     * Delete the node containing the minimum key.
-     */
-    public void deleteMin() {
-        if (this.isEmpty()){
-            return;
-        }
-        HeapNode z = this.min;
-        if (z != null) { //in case the heap is not empty we delete the minimum
-            if (z.child != null) {
-                HeapNode y0 = z.child;
-                HeapNode y = y0;
-                while (y != y0) {
-                    z.InsertAfter(y);
-                    y.parent = null;
-                    y = y.next;
-                }
-            }
-        }
-        z.prev.next = z.next; //we skip over the minimum in the roots list.
-        z.next.prev = z.prev;
-
-        if (z == z.next) { //in case we deleted the only node in the tree
-            this.min = null;
-        } else {
-            this.min = z.next;
-            Consolidate();
-        }
-        this.size -= 1; //updating the size field
-
-    }
     //------------------------ numOfTrees ------------------------------
 
     public int numOfTrees() {
@@ -163,71 +120,154 @@ public class FibonacciHeap
         return res;
     }
 
+    //---------------------------  deleteMin ------------------------------------------------------------
+    /**
+     * public void deleteMin()
+     *
+     * Delete the node containing the minimum key.
+     */
+
+    public void deleteMin(){
+        if (this.isEmpty()){
+            return;
+        }
+
+        if (this.min.child == null){                 //min is childless -  only bypassing min
+            this.min.prev.next = this.min.next;
+            this.min.next.prev = this.min.prev;
+            if (this.size == 1){                    //deletion of the only node, returning an empty heap
+                this.min = null;
+                this.size = 0;
+                this.treesNum = 0;
+                this.markedNum = 0;
+                return;
+            }
+        }
+        else{                       // insert mins sons to the trees list, and unmarking them
+            HeapNode child = this.min.child;
+
+            HeapNode currSon = child;  // looping over the sons of min - making their parent a null and unmark them.
+            do {
+                currSon.parent = null;
+                if (currSon.marked){
+                    currSon.marked = false;
+                    markedNum -= 1;
+                }
+                currSon = currSon.next;
+            } while (currSon != child);
+
+            HeapNode lastSon = child.prev;
+
+            this.min.prev.next = child;
+            child.prev = this.min.prev;
+            lastSon.next = this.min.next;
+            this.min.next.prev = lastSon;
+        }
+
+        consolidate();      //finds the new min and update the min field. update the treesNum field.
+
+        this.size -= 1;
+
+    }
+
+
     //------------------------- Consolidate / Successive Linking ----------------------------------------
-    //makes the fib-Heap to nonLazy-Heap
+    /**
+     * protected void consolidate()
+     *
+     * makes the heap with only one tree from each rank.
+     * update the treesNum field and the min field accordingly.
+     */
 
-    public void Consolidate() {
+    protected void consolidate() {
+        fromBuckets(toBuckets());
+    }
+
+    /**
+     * protected HeapNode[] toBuckets()
+     *
+     * loop over the the trees of the heap and link every pair of trees with the same rank.
+     * return a buckets array with the linked trees.
+     */
+    protected HeapNode[] toBuckets(){
         int maxRank = (int)Math.floor(customLog(1.618,this.size));
-        HeapNode[] buckets = new HeapNode[maxRank + 1 ]; //initialize the buckets list
-        for (int i = 0; i < buckets.length ; i++) {
-            buckets[i] = null;                          //they are allready nulls
-        }
+        HeapNode[] bucketsArr = new HeapNode[maxRank + 1 ]; //initialize the buckets list
 
-        HeapNode start = this.sentinel; //looping through the root list, starting sentinel
-        HeapNode runner = start.next;
-        while (runner != start) {
-            HeapNode x = runner;
-            int d = x.rank;
-            while (buckets[d] != null) { //there are trees in the bucket
-                HeapNode y = buckets[d];
-                if (x.getKey() > y.getKey()) { //making sure that x is will be the root in the linking action
-                    HeapNode tmp = x;
-                    x = y;
-                    y = tmp;
-                }
-                Link(y, x);
-                buckets[d] = null;
-                d += 1;
+        HeapNode currTree = this.sentinel.next;
+        while (currTree.rank != -1){  //looping through the root list
+            HeapNode nextTree = currTree.next;
+            while (bucketsArr[currTree.rank] != null){
+                currTree = link(bucketsArr[currTree.rank],currTree);
+                bucketsArr[currTree.rank - 1] = null;
             }
-            buckets[d] = x; //no trees in the bucket
-            runner = runner.next;
+            bucketsArr[currTree.rank] = currTree;
+            currTree = nextTree;
         }
+        return bucketsArr;
+    }
+
+    /**
+     * protected void fromBuckets(HeapNode[] bucketsArr)
+     *
+     * loop over the the buckets and add all linked trees to the heap.
+     * update the treesNum field and the min field accordingly.
+     */
+    protected void fromBuckets(HeapNode[] bucketsArr){
         this.treesNum = 0;
-        this.min = null; //unpacking the buckets
-        for (int i = 0; i < buckets.length; i++) {
-            if (buckets[i] != null) {
-                if (this.min == null) {
-                    this.sentinel.next = buckets[i];
-                    this.sentinel.prev = buckets[i];
-                    this.min = buckets[i];
-                } else {
-                    this.sentinel.InsertAfter(buckets[i]); //inserting the tree in bucket i to the root list
-                    if (buckets[i].getKey() < this.min.getKey()) { //updating the new minimum node
-                        this.min = buckets[i];
-                    }
-                }
+        this.min = this.sentinel;
+        HeapNode prevTree = this.sentinel;
+        for (int i = 0; i < bucketsArr.length; i++) {
+            if (bucketsArr[i] != null) {
+                HeapNode currTree = bucketsArr[i];
+
+                prevTree.next = currTree;
+                currTree.prev = prevTree;
+                currTree.next = this.sentinel;
+
+                //updating the number of trees and the min
                 this.treesNum += 1;
+                if (currTree.key < this.min.key) {
+                    this.min = currTree;
+                }
+
+                prevTree = currTree;
             }
         }
+        this.sentinel.prev = prevTree;
     }
 
     //-------------------------- Link -----------------------------------------------
+    /**
+     * public HeapNode Link(HeapNode x, HeapNode y)
+     *
+     * link the node with the larger key as a son to the other one.
+     * add one to the parent rank and to the static field linksNum.
+     * return the parent node;
+     */
 
-    public void Link(HeapNode y, HeapNode x) {
-        //removing y from the root list
-        y.prev.next = y.next;
-        y.next.prev = y.prev;
-
-        //making y a child of x
-        if (x.child != null){ //x already have other children
-            y.InsertAfter(x.child);
+    public HeapNode link(HeapNode x, HeapNode y){
+        if (y.key < x.key){  //defining x to be the smaller, hens the parent.
+            HeapNode temp = x;
+            x = y;
+            y = temp;
         }
-        x.child = y; //adding y as the biggest child of x and connecting his other children to it
         y.parent = x;
-        //y.marked = false;             why?
-        //this.markedNum -= 1;
+
+        if (x.child == null){ //linking two childless nodes
+            y.next = y;
+            y.prev = y;
+        }
+        else {  //insert y at the beginning of x sons list
+            y.next = x.child;
+            y.prev = x.child.prev;
+            x.child.prev.next = y;
+            x.child.prev = y;
+        }
+        x.child = y;
         x.rank += 1;
         linksNum += 1;
+
+        return x;
     }
 
     //-------------------------- findMin --------------------------------------------------------
@@ -255,6 +295,7 @@ public class FibonacciHeap
         }
         if (this.isEmpty()){    // the heap is empty and heap2 is not empty
             this.changeTo(heap2);
+            return;
         }
         // saving pointers:
         HeapNode thisTail = this.getTail();
@@ -266,7 +307,7 @@ public class FibonacciHeap
         heap2Tail.next = this.sentinel;
 
         // changing the "prev"s:
-        heap2Sentinel.next.prev = thisTail;
+        heap2Sentinel.next.prev = thisTail;  //skipping heap2 Sentinel
         this.sentinel.prev = heap2Tail;
 
         //Updating fields:
@@ -276,6 +317,19 @@ public class FibonacciHeap
         if (heap2.findMin().key < this.min.key){
             this.min = heap2.findMin();
         }
+    }
+
+    //------------------------ meld at first -----------------------------------------------
+    /**
+     * public void meldAtFirst (FibonacciHeap heap2)
+     *
+     * Meld the heap with heap2  - by concatenating heap2 roots list to the BEGINNING of this heap roots list
+     * updating the fields: size, min and number_of_trees
+     */
+
+    public void meldAtFirst (FibonacciHeap heap2) {
+        heap2.meld(this);
+        this.changeTo(heap2);
     }
 
     //---------------------------------  size ----------------------------------------------
@@ -307,7 +361,8 @@ public class FibonacciHeap
      *
      */
     public void delete(HeapNode x) {
-        return; // should be replaced by student code
+        this.decreaseKey(x, x.key - Integer.MIN_VALUE);
+        this.deleteMin();
     }
 
     //---------------------------------  decreaseKey ----------------------------------------------
@@ -338,10 +393,12 @@ public class FibonacciHeap
     */
     private void cut(HeapNode x){
         HeapNode parent = x.parent;
-        x.parent = null;
-        x.marked = false;
-        this.markedNum -= 1;
         parent.rank -= 1;
+        x.parent = null;
+        if (x.marked){
+            x.marked = false;
+            this.markedNum -= 1;
+        }
         if (x.next == x){ // x was an only child
             parent.child = null;
         }
@@ -453,7 +510,7 @@ public class FibonacciHeap
         protected HeapNode parent;
 
         public HeapNode(){ //constructor of sentinel
-            this.key = 0;
+            this.key = Integer.MAX_VALUE;
             this.child = null;
             this.next = this; //pointing on itself
             this.prev = this; //pointing on itself
@@ -482,10 +539,9 @@ public class FibonacciHeap
          * insert node B after the node "this"
          */
         public void InsertAfter(HeapNode B){
-            HeapNode A = this;
-            B.prev = A;
-            B.next = A.next;
-            A.next = B;
+            B.prev = this;
+            B.next = this.next;
+            this.next = B;
             B.next.prev = B;
         }
 
