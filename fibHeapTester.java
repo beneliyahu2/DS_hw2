@@ -32,7 +32,7 @@ public class fibHeapTester {
         System.out.println(str);
     }
 
-    private static void sepetatorPrint( String lastAction) {
+    private static void separatorPrint(String lastAction) {
         p("");
         p("");
         p("----------------- Last action: " + lastAction + " ---------------------- :");
@@ -48,7 +48,7 @@ public class fibHeapTester {
     }
     //String:
     private static void errorPrinter(String testName, String wantedRes , String output ) {
-        if (output != wantedRes) {
+        if (!output.equals(wantedRes)) {
             p("error in: " + testName + ", suppose to be: " + wantedRes + ", output: " + output);
         }
     }
@@ -98,7 +98,7 @@ public class fibHeapTester {
     //---------------
 
     private static void testLinksNum( int wantedRes) {
-        errorPrinter("LinksdNum()", wantedRes, FibonacciHeap.linksNum);
+        errorPrinter("LinkedNum()", wantedRes, FibonacciHeap.linksNum);
     }
 
     private static void testCutsNum(int wantedRes) {
@@ -129,12 +129,12 @@ public class fibHeapTester {
     public static void main(String[] args) {
 
         FibonacciHeap h = new FibonacciHeap();
-        sepetatorPrint( "new AVLTree()");
+        separatorPrint( "new AVLTree()");
         emptyHeapTest(h);
 
         //------------------------------------ inserts -----------------------------------------------
 
-        sepetatorPrint( "insert 5, 4, 6");
+        separatorPrint( "insert 5, 4, 6");
         h.insert(5);
         h.insert(4);
         h.insert(6);
@@ -143,7 +143,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, 5, 2, 1, 0);
         testLinksNum(1);
@@ -151,7 +151,7 @@ public class fibHeapTester {
 
         //---------------------------------- insert -9 -------------------------------------------
 
-        sepetatorPrint("inset -9, 4, 10");
+        separatorPrint("inset -9, 4, 10");
         h.insert(-9);
         h.insert(4);
         h.insert(10);
@@ -160,7 +160,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, 4, 4, 1, 0);
         testLinksNum(3);
@@ -168,7 +168,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, 5, 3, 2, 0);
         testLinksNum(3);
@@ -176,7 +176,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, 6, 2, 1, 0);
         testLinksNum(4);
@@ -184,7 +184,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, 10, 1, 1, 0);
         testLinksNum(4);
@@ -192,7 +192,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min - to get an empty heap--------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         emptyHeapTest(h);
         testLinksNum(4);
@@ -200,7 +200,7 @@ public class fibHeapTester {
 
         //--------------------------------- new heap h2 with keys: 1, 7, 9, -4, -6  ---------------------
 
-        sepetatorPrint("new heap h2 with keys: 1, 7, 9, -4, -6");
+        separatorPrint("new heap h2 with keys: 1, 7, 9, -4, -6");
         FibonacciHeap h2 = new FibonacciHeap(-4);
         heapTest(h2, -4, 1, 1, 0);
         FibonacciHeap.HeapNode node9 = h2.insert(9);
@@ -212,19 +212,19 @@ public class fibHeapTester {
 
         //----------------------------- meld h2 to h ----------------------------------------------------
 
-        sepetatorPrint("meld h2 to h (which is empty)");
+        separatorPrint("meld h2 to h (which is empty)");
         h.meld(h2);
         heapTest(h, -6, 5, 5, 0);
         printHeap(h);
 
         //----------------------------------- insert -12 -------------------------------------------
-        sepetatorPrint("inset -12");
+        separatorPrint("inset -12");
         h.insert(-12);
          heapTest(h, -12, 6, 6, 0);
          printHeap(h);
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, -6, 5, 2, 0);
         testLinksNum(7);
@@ -232,7 +232,7 @@ public class fibHeapTester {
 
         //----------------------------------- new empty heap h3, meld it to h ----------------------------
 
-        sepetatorPrint("new empty heap h3, meld it to h");
+        separatorPrint("new empty heap h3, meld it to h");
         FibonacciHeap h3 = new FibonacciHeap();
         h.meld(h3);
         heapTest(h, -6, 5, 2, 0);
@@ -240,7 +240,7 @@ public class fibHeapTester {
 
         //------------------------------ new heap h4 with 5, 0, 2, 11, -3, -20 ---------------------------
 
-        sepetatorPrint("new heap h4 with 5, 0, 2, 11, -3, -20, -30");
+        separatorPrint("new heap h4 with 5, 0, 2, 11, -3, -20, -30");
         FibonacciHeap h4 = new FibonacciHeap();
         h4.insert(-30);
         h4.insert(-20);
@@ -253,7 +253,7 @@ public class fibHeapTester {
 
         //------------------------------ delete min of h4 ---------------------------------------------------
 
-        sepetatorPrint("delete min of h4");
+        separatorPrint("delete min of h4");
         h4.deleteMin();
         heapTest(h4, -20, 6, 2,0);
         testLinksNum(11);
@@ -261,14 +261,14 @@ public class fibHeapTester {
 
         //-------------------------------- meld h4 to h -------------------------------------------------
 
-        sepetatorPrint("meld h4 to h");
+        separatorPrint("meld h4 to h");
         h.meld(h4);
         heapTest(h, -20, 11, 4, 0);
         printHeap(h);
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, -6, 10, 2, 0);
         testLinksNum(13);
@@ -276,7 +276,7 @@ public class fibHeapTester {
 
         //---------------------------------- h.decreaseKey(node11, 16) : to -5" ------------------------------
 
-        sepetatorPrint("h.decreaseKey(node11, 16) : to -5");
+        separatorPrint("h.decreaseKey(node11, 16) : to -5");
         h.decreaseKey(node11, 16);
         heapTest(h, -6,10, 3, 1);
         testCutsNum(1);
@@ -284,7 +284,7 @@ public class fibHeapTester {
 
         //--------------------------------- h.decreaseKey(node5, 23) : to -18"-----------------------------
 
-        sepetatorPrint("h.decreaseKey(node5, 23)");
+        separatorPrint("h.decreaseKey(node5, 23)");
         h.decreaseKey(node5, 23);
         heapTest(h, -18, 10, 4,2);
         testCutsNum(2);
@@ -292,7 +292,7 @@ public class fibHeapTester {
 
         //--------------------------------- h.decreaseKey(node0, 4) : to -4"-----------------------------
 
-        sepetatorPrint("h.decreaseKey(node0, 4)");
+        separatorPrint("h.decreaseKey(node0, 4)");
         h.decreaseKey(node0, 8);
         heapTest(h, -18, 10, 6,0);
         testCutsNum(4);
@@ -300,7 +300,7 @@ public class fibHeapTester {
 
         //----------------------------------- delete min --------------------------------------------
 
-        sepetatorPrint("delete min");
+        separatorPrint("delete min");
         h.deleteMin();
         heapTest(h, -8, 9, 2, 0);
         testLinksNum(16);
@@ -308,7 +308,7 @@ public class fibHeapTester {
 
         //--------------------------------- delete node1 ---------------------------------------------
 
-        sepetatorPrint("h.delete(node1)");
+        separatorPrint("h.delete(node1)");
         h.delete(node1);
         heapTest(h, -8, 8, 2, 1);
         testLinksNum(17);
@@ -317,7 +317,7 @@ public class fibHeapTester {
 
         //--------------------------------- delete node9 ---------------------------------------------
 
-        sepetatorPrint("h.delete(node9)");
+        separatorPrint("h.delete(node9)");
         h.delete(node9);
         heapTest(h, -8, 7, 3, 0);
         testLinksNum(17);

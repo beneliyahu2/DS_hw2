@@ -124,10 +124,10 @@ public class FibonacciHeap
                 return;
             }
         }
-        else{                       // insert mins sons to the trees list, and unmarking them
+        else{                       // insert mins sons to the trees list, and unmarked them
             HeapNode child = this.min.child;
 
-            HeapNode currSon = child;  // looping over the sons of min - making their parent a null and unmark them.
+            HeapNode currSon = child;  // looping over the sons of min - making their parent a null and unmarked them.
             do {
                 currSon.parent = null;
                 if (currSon.marked){
@@ -170,7 +170,7 @@ public class FibonacciHeap
      * return a buckets array with the linked trees.
      */
     protected HeapNode[] toBuckets(){
-        int maxRank = (int)Math.floor((double)Math.log(this.size) / Math.log(1.618));
+        int maxRank = (int)Math.floor(Math.log(this.size) / Math.log(1.618));
         HeapNode[] bucketsArr = new HeapNode[maxRank + 1 ]; //initialize the buckets list
 
         HeapNode currTree = this.sentinel.next;
@@ -349,7 +349,6 @@ public class FibonacciHeap
         else if (x.key < x.parent.key){  // x is not a root and new key violate the heap role
             cascadingCut(x);
         }
-        return;
     }
 
     //------------------------ cut -----------------------------------------------------------
