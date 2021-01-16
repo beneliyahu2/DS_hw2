@@ -101,22 +101,6 @@ public class FibonacciHeap
         return insertNode;
     }
 
-    //------------------------ numOfTrees ------------------------------
-
-    public int numOfTrees() {
-        if(this.isEmpty()){
-            return 0;
-        }
-        int res = 1;
-        HeapNode start = this.sentinel; //looping through the root list
-        HeapNode runner = start.next;
-        while (runner != start) {
-            res += 1;
-            runner = runner.next;
-        }
-        return res;
-    }
-
     //---------------------------  deleteMin ------------------------------------------------------------
     /**
      * public void deleteMin()
@@ -369,7 +353,7 @@ public class FibonacciHeap
     }
 
     //------------------------ cut -----------------------------------------------------------
-    /*
+    /**
     * private void cut(HeapNode x)
     * cut away from its original tree the subtree that x is its root.
     * fixes the original tree pointers and fields of its nodes. does not deal with the subtree that was cut.
@@ -398,7 +382,7 @@ public class FibonacciHeap
 
     //------------------------ cascading cut ----------------------------------------------------
 
-    /*
+    /**
     * private void cascadingCut(HeapNode x)
     * cut away from its original tree the subtree that x is its root and keep on cutting its ancestors subtrees if needed.
     * append the cut subtrees to the root list.
