@@ -1,3 +1,5 @@
+package DS_hw2;
+
 /**
  * FibonacciHeap
  *
@@ -315,10 +317,18 @@ public class FibonacciHeap
      *
      * Return a counters array, where the value of the i-th entry is the number of trees of order i in the heap.
      */
-    public int[] countersRep() {
-        int[] arr = new int[42];
-        return arr; //	 to be replaced by student code
+    public int[] countersRep ()
+    {
+        int maxRank = (int)Math.floor(Math.log(this.size) / Math.log(1.618));
+        int[] res = new int[maxRank];
+        HeapNode start = this.sentinel;
+        HeapNode x = this.sentinel.next;
+        while (x != start){
+            res[x.rank] += 1;
+        }
+        return res;
     }
+
 
     //---------------------------------  delete ----------------------------------------------
     /**
@@ -457,10 +467,30 @@ public class FibonacciHeap
      * The function should run in O(k*deg(H)).
      * You are not allowed to change H.
      */
-    public static int[] kMin(FibonacciHeap H, int k) {
-        int[] arr = new int[42];
-        return arr; // should be replaced by student code
+    public static int[] kMin (FibonacciHeap H,int k) //assuming that H is not empty
+    {
+        int[] res = new int[k];
+        res[0] = H.min.getKey();
+        FibonacciHeap KsizeCopy = new FibonacciHeap();
+
+        for (int i=1; i< res.length;i++) {
+            HeapNode x = H.min;
+            while (x.child != null) { //looping down the binomial Tree
+                HeapNode first_child = x.child;
+                HeapNode y = x.child.next;
+                while (y != first_child) { //looping right to all of x direct children
+                    KsizeCopy.insert(y.getKey()); //adding child to the KsizeCopy
+                    y = y.next;
+                }
+                //now we added all of the childen to the ksizeCopy
+                res[i] = KsizeCopy.min.getKey();
+                KsizeCopy.deleteMin();
+                x = x.child;
+            }
+        }
+        return res;
     }
+
 
     //------------------------------- HeapNode --------------------------------------
 
