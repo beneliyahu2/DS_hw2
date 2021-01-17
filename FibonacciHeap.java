@@ -1,5 +1,3 @@
-package DS_hw2;
-
 /**
  * FibonacciHeap
  *
